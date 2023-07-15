@@ -1,0 +1,9 @@
+:root {
+    --xcolor: linear-gradient(45deg, #991608, #C43D27);
+    --ycolor: linear-gradient(45deg, #00A1AD, #07BED6);
+    
+}
+
+img {
+    width: 50px;
+}
