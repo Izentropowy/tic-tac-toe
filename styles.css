@@ -34,6 +34,10 @@ img, svg {
     width: 50px;
 }
 
+button:hover {
+    cursor: pointer;
+}
+
 header {
     display: flex;
     justify-content: space-around;
@@ -55,6 +59,10 @@ header {
     background-color: var(--grey);
 }
 
+.undo:hover {
+    opacity: 0.9;
+}
+
 .main {
     display: grid;
     place-items: center;
@@ -68,12 +76,12 @@ header {
     gap: var(--mgn);
 }
 
-.main > ul > li, .btn {
+.main > ul > li, .game-btn {
     height: 100px;
     width: 100px;
 }
 
-.btn {
+.game-btn {
     background-color: var(--secondary);
     border: none;
     border-radius: var(--radius);
@@ -81,6 +89,13 @@ header {
     outline: 2px solid rgba(255, 255, 255, .2);
     transition: all .5s ease;
     box-shadow: 0 10px 10px rgba(0, 0, 0, .5);
+}
+
+.game-btn:hover {
+    background-image: url(images/o.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: none;
 }
 
 .scores {
