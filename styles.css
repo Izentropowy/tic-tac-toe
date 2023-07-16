@@ -6,8 +6,9 @@
     --primary: #1A2B33;
     --secondary: #1E3640;
     --grey: #A9BEC8;
-    --mgn: 10px;
-    --pdg: 10px;
+    --mgn: 15px;
+    --pdg: 15px;
+    --radius: 10px
 }
 
 * {
@@ -23,7 +24,7 @@ html, body {
 }
 
 body {
-    display:grid;
+    display: grid;
     grid-template-rows: 70px 1fr 70px;
     background-color: var(--primary);
 }
@@ -33,50 +34,84 @@ img, svg {
     width: 50px;
 }
 
-.btn {
-    height: 100px;
-    width: 100px;
-}
-
 header {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
-    padding: var(--pdg);
+    letter-spacing: 3px;
 }
 
 .turn-display {
     background-color: var(--secondary);
     padding: 10px 20px;
-    border-radius: 10px;
+    border-radius: var(--radius);
     box-shadow: 0 10px 10px rgba(0, 0, 0, .3);
 }
 
 .undo {
     border: 1px solid black;
-    border-radius: 10px;
+    border-radius: var(--radius);
     box-shadow: 0 -5px 0px rgba(0, 0, 0, .3);
     background-color: var(--grey);
 }
 
 .main {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    place-items: center;
 }
 
-.main>ul {
+.main > ul {
     list-style: none;
     display: grid;
-    grid-template-rows: 1fr 1fr 1fr;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
     gap: var(--mgn);
+}
+
+.main > ul > li, .btn {
+    height: 100px;
+    width: 100px;
+}
+
+.btn {
+    background-color: var(--secondary);
+    border: none;
+    border-radius: var(--radius);
+    outline: 2px solid var(--opac-black);
+    outline: 2px solid rgba(255, 255, 255, .2);
+    transition: all .5s ease;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, .5);
 }
 
 .scores {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    place-items: center;
+    grid-template-columns: 1fr 1fr 1fr;
+    position: relative;
+    bottom: 50%;
+    margin: var(--mgn);
     gap: var(--mgn);
+}
+
+.scores > div {
+    border-radius: var(--radius);
     padding: var(--pdg);
+    width: 100%;
+}
+
+.scores > div:first-child {
+    background: var(--xcolor);
+}
+
+.scores > div:nth-child(2) {
+    background: var(--grey);
+}
+
+.scores > div:nth-child(3) {
+    background: var(--ycolor);
+}
+
+.scores h3, h5 {
+    color: var(--secondary);
+    text-align: center;
 }
