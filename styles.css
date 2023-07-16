@@ -92,7 +92,7 @@ header {
 }
 
 .game-btn:hover {
-    background-image: url(images/o.svg);
+    background-image: url(images/x.svg);
     background-repeat: no-repeat;
     background-position: center;
     transition: none;
@@ -104,8 +104,11 @@ header {
     grid-template-columns: 1fr 1fr 1fr;
     position: relative;
     bottom: 50%;
-    margin: var(--mgn);
+    padding: var(--pdg);
     gap: var(--mgn);
+    width: 100%;
+    max-width: 800px;
+    justify-self: center;
 }
 
 .scores > div {
@@ -130,3 +133,10 @@ header {
     color: var(--secondary);
     text-align: center;
 }
+
+/* @media (min-width: 800px) {
+    .scores {
+        justify-self: center;
+        max-width: 750px;
+    }
+} */
