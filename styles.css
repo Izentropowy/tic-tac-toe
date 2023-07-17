@@ -133,10 +133,3 @@ header {
     color: var(--secondary);
     text-align: center;
 }
-
-/* @media (min-width: 800px) {
-    .scores {
-        justify-self: center;
-        max-width: 750px;
-    }
-} */
