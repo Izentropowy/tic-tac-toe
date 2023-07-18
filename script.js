@@ -61,15 +61,18 @@ const field = () => {
 }
 
 const gameboard = (() => {
-    const dimension = 3;
     const board = [];
 
-    for (let i = 0; i < dimension; i++) {
-        board[i] = [];
-        for (let j = 0; j < dimension; j++) {
-            board[i].push(field());
+    const resetBoard = () => {
+        for (let i = 0; i < 3; i++) {
+            board[i] = [];
+            for (let j = 0; j < 3; j++) {
+                board[i].push(field());
+            }
         }
     }
+
+    resetBoard();
 
     const getBoard = () => board;
 
@@ -80,6 +83,7 @@ const gameboard = (() => {
     return {
         getBoard,
         updateBoard,
+        resetBoard,
     }
 })();
 
@@ -88,6 +92,7 @@ const gamecontroller = (() => {
     const player2 = player('player2', 'o');
 
     let activePlayer = player1;
+    const board = gameboard.getBoard();
 
     const _toggleActivePlayer = () => {
         activePlayer === player1 ? activePlayer = player2 : activePlayer = player1;
@@ -95,10 +100,65 @@ const gamecontroller = (() => {
 
     const getActivePlayer = () => activePlayer;
 
+    const _findWinner = () => {
+        const winningLines = [];
+        let winner = false;
+        const checkLine = (line) => {
+            if (line === "xxx") {
+                winner = player1;
+            }
+            else if (line === "ooo") {
+                winner = player2;
+            }
+        }
+
+          // Rows
+        for (let i = 0; i < 3; i++) {
+            const row = [];
+            for (let j = 0; j < 3; j++) {
+            row.push([i, j]);
+            }
+            winningLines.push(row);
+        }
+
+        // Columns
+        for (let i = 0; i < 3; i++) {
+            const column = [];
+            for (let j = 0; j < 3; j++) {
+            column.push([j, i]);
+            }
+            winningLines.push(column);
+        }
+
+          // Diagonals
+        const diagonal1 = [];
+        const diagonal2 = [];
+        for (let i = 0; i < 3; i++) {
+            diagonal1.push([i, i]);
+            diagonal2.push([i, 3 - 1 - i]);
+        }
+        winningLines.push(diagonal1, diagonal2);
+
+        winningLines.forEach(line => {
+            // each line contains a winning line
+            let checked = "";
+            line.forEach((element) => {
+                // each element contains coordinates [x, y]
+                checked += board[element[0]][element[1]].getValue();
+            });
+            checkLine(checked);
+            checked = "";
+        });
+
+        return winner;
+    }
+
     const playRound = (row, column) => {
         gameboard.updateBoard(row, column, activePlayer);
         _toggleActivePlayer();
-        console.log(gameboard.getBoard()[0][0].getValue());
+        if (_findWinner()) {
+            gameboard.resetBoard();
+        }
     }
 
     return {
@@ -114,6 +174,7 @@ const displaycontroller = (() => {
         let row = e.target.dataset.row;
         let column = e.target.dataset.column;
         e.target.classList.add(gamecontroller.getActivePlayer().token);
+        e.target.disabled = true;
         gamecontroller.playRound(row, column);
     }
 
