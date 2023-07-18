@@ -1,135 +1,121 @@
-const dimension = 3;
 
-const Field = (row, column) => {
-    let value = '';
-    let isEmpty = true;
+/* 
+MODULES:
+Gameboard():
+    - creates empty board
+    - updates board
+    - checks available fields
 
-    const toggleStatus = () => {
-        isEmpty = false;
-    }
+Gamecontroller():
+    - creates players
+    - toggle active player
+    - plays a round
+    - looks for a winner
 
-    const getStatus = () => isEmpty;
+Displaycontroller():
+    - displays values in corresponding fields
+    - updates turn display
+    - updates points display
 
-    return {
-        row,
-        column,
-        value,
-        getStatus,
-        toggleStatus,
-    }
-}
+FACTORIES:
+Player():
+    - name
+    - token
+    - points
 
-const Player = (token) => {
-    let isWinner = false;
+Field():
+    - value
+    - change value
+ */
+
+const player = (name, token) => {
     let points = 0;
 
     const addPoint = () => {
         points += 1;
     }
 
-    const toggleStatus = () => {
-        isWinner = true;
-    }
-
-    const getStatus = () => isWinner;
-
     const getPoints = () => points;
 
     return {
+        name,
         token,
         addPoint,
-        toggleStatus,
         getPoints,
-        getStatus,
+    }
+}
+
+const field = () => {
+    let value = '-';
+
+    const changeValue = (newValue) => {
+        value = newValue;
+    }
+
+    const getValue = () => value;
+
+    return {
+        changeValue,
+        getValue,
     }
 }
 
 const gameboard = (() => {
-    const _createEmptyBoard = () => {
-        let newBoard = [];
+    const dimension = 3;
+    const board = [];
 
-        for (let i = 0; i < dimension; i++) {
-            newBoard[i] = [];
-            for (let j = 0; j < dimension; j++) {
-                newBoard[i].push(Field(i, j));
-            }   
+    for (let i = 0; i < dimension; i++) {
+        board[i] = [];
+        for (let j = 0; j < dimension; j++) {
+            board[i].push(field());
         }
-        return newBoard;
     }
-    
-
-
-    let board = _createEmptyBoard();
 
     const getBoard = () => board;
 
-    const updateBoard = (oldBoard, row, column, player) => {
-        oldBoard[row][column].value = `${player.token}`;
-        oldBoard[row][column].toggleStatus();
-        board = oldBoard;
-        return board;
+    const updateBoard = (row, column, player) => {
+        board[row][column].changeValue(player.token);
     }
 
     return {
         getBoard,
         updateBoard,
-    };
+    }
 })();
 
-const gameController = (() => {
-    const playerX = Player('x');
-    const playerO = Player('o');
-    let board = gameboard.getBoard();
+const gamecontroller = (() => {
+    const player1 = player('player1', 'x');
+    const player2 = player('player2', 'o');
 
-    let activePlayer = playerX;
+    let activePlayer = player1;
 
-    const switchPlayerTurn = () => {
-        activePlayer = activePlayer === playerX ? playerO : playerX;
+    const _toggleActivePlayer = () => {
+        activePlayer === player1 ? activePlayer = player2 : activePlayer = player1;
     }
 
     const getActivePlayer = () => activePlayer;
 
     const playRound = (row, column) => {
-
-        if (board[row][column].getStatus() == true) {
-            gameboard.updateBoard(board, row, column, activePlayer);
-            switchPlayerTurn();
-        }
-
-        console.log(board);
+        gameboard.updateBoard(row, column, activePlayer);
+        _toggleActivePlayer();
+        console.log(gameboard.getBoard()[0][0].getValue());
     }
 
     return {
-        switchPlayerTurn,
         getActivePlayer,
         playRound,
     }
 })();
 
-const displayController = (() => {
+const displaycontroller = (() => {
     const buttons = document.querySelectorAll('.game-btn');
-
-    const _assignData = (buttons) => {
-        buttons.forEach((button, index) => {
-            const i = Math.floor(index / dimension);
-            const j = index % dimension;
-            button.setAttribute('data-row', `${i}`);
-            button.setAttribute('data-column', `${j}`);
-        });
-    };
     
-    _assignData(buttons);
-
-    buttons.forEach(button => button.addEventListener('click', () => 
-    {
-        let row = button.dataset.row;
-        let column = button.dataset.column;
-        let activeToken = gameController.getActivePlayer().token;
-        gameController.playRound(row, column);
-        button.classList.add(activeToken);
-        button.disabled = true;
+    const _buttonClicked = (e) => {
+        let row = e.target.dataset.row;
+        let column = e.target.dataset.column;
+        e.target.classList.add(gamecontroller.getActivePlayer().token);
+        gamecontroller.playRound(row, column);
     }
-    ));
+
+    buttons.forEach(button => button.addEventListener('click', _buttonClicked));
 })();
-
-
