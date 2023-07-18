@@ -1,6 +1,7 @@
 const dimension = 3;
 
 const Field = (row, column) => {
+    let value = '';
     let isEmpty = true;
 
     const toggleStatus = () => {
@@ -12,6 +13,7 @@ const Field = (row, column) => {
     return {
         row,
         column,
+        value,
         getStatus,
         toggleStatus,
     }
@@ -43,7 +45,7 @@ const Player = (token) => {
 }
 
 const gameboard = (() => {
-    const createEmptyBoard = () => {
+    const _createEmptyBoard = () => {
         let newBoard = [];
 
         for (let i = 0; i < dimension; i++) {
@@ -55,12 +57,15 @@ const gameboard = (() => {
         return newBoard;
     }
     
-    let board = createEmptyBoard();
+
+
+    let board = _createEmptyBoard();
 
     const getBoard = () => board;
 
     const updateBoard = (oldBoard, row, column, player) => {
-        oldBoard[row][column] = `${player.token}`;
+        oldBoard[row][column].value = `${player.token}`;
+        oldBoard[row][column].toggleStatus();
         board = oldBoard;
         return board;
     }
@@ -74,7 +79,7 @@ const gameboard = (() => {
 const gameController = (() => {
     const playerX = Player('x');
     const playerO = Player('o');
-    const board = gameboard.getBoard();
+    let board = gameboard.getBoard();
 
     let activePlayer = playerX;
 
@@ -85,10 +90,15 @@ const gameController = (() => {
     const getActivePlayer = () => activePlayer;
 
     const playRound = (row, column) => {
-        gameboard.updateBoard(board, row, column, activePlayer);
-        switchPlayerTurn();
+
+        if (board[row][column].getStatus() == true) {
+            gameboard.updateBoard(board, row, column, activePlayer);
+            switchPlayerTurn();
+        }
+
         console.log(board);
     }
+
     return {
         switchPlayerTurn,
         getActivePlayer,
@@ -97,26 +107,29 @@ const gameController = (() => {
 })();
 
 const displayController = (() => {
-    const fields = document.querySelectorAll('.game-btn');
+    const buttons = document.querySelectorAll('.game-btn');
 
-    const assignData = (fields) => {
-        fields.forEach((field, index) => {
+    const _assignData = (buttons) => {
+        buttons.forEach((button, index) => {
             const i = Math.floor(index / dimension);
             const j = index % dimension;
-            field.setAttribute('data-row', `${i}`);
-            field.setAttribute('data-column', `${j}`);
+            button.setAttribute('data-row', `${i}`);
+            button.setAttribute('data-column', `${j}`);
         });
     };
     
-    assignData(fields);
+    _assignData(buttons);
 
-    fields.forEach(field => field.addEventListener('click', () => 
+    buttons.forEach(button => button.addEventListener('click', () => 
     {
-        let row = field.dataset.row;
-        let column = field.dataset.column;
+        let row = button.dataset.row;
+        let column = button.dataset.column;
+        let activeToken = gameController.getActivePlayer().token;
         gameController.playRound(row, column);
+        button.classList.add(activeToken);
+        button.disabled = true;
     }
-        ));
+    ));
 })();
 
 

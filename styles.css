@@ -34,7 +34,7 @@ img, svg {
     width: 50px;
 }
 
-button:hover {
+button:hover:enabled {
     cursor: pointer;
 }
 
@@ -91,13 +91,6 @@ header {
     box-shadow: 0 10px 10px rgba(0, 0, 0, .5);
 }
 
-.game-btn:hover {
-    background-image: url(images/x.svg);
-    background-repeat: no-repeat;
-    background-position: center;
-    transition: none;
-}
-
 .scores {
     display: grid;
     place-items: center;
@@ -132,4 +125,24 @@ header {
 .scores h3, h5 {
     color: var(--secondary);
     text-align: center;
+}
+
+/* js interaction */
+
+.game-btn:hover, .x, .o {
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: none;
+}
+
+.game-btn:hover:enabled {
+    opacity: 0.5;
+}
+
+.x {
+    background-image: url(images/x.svg);
+}
+
+.o {
+    background-image: url(images/o.svg);
 }
