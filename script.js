@@ -158,6 +158,7 @@ const gamecontroller = (() => {
         _toggleActivePlayer();
         if (_findWinner()) {
             gameboard.resetBoard();
+            displaycontroller.resetDisplay();
         }
     }
 
@@ -178,5 +179,17 @@ const displaycontroller = (() => {
         gamecontroller.playRound(row, column);
     }
 
+    const resetDisplay = () => {
+        buttons.forEach(button => {
+            let buttonClass = button.classList.contains('x') ? 'x' : 'o';
+            button.classList.remove(buttonClass);
+            button.disabled = false;
+        })
+    }
+
     buttons.forEach(button => button.addEventListener('click', _buttonClicked));
+
+    return {
+        resetDisplay,
+    }
 })();
