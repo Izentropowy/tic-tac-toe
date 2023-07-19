@@ -64,8 +64,8 @@ const gameboard = (() => {
 })();
 
 const gamecontroller = (() => {
-    const player1 = player('player1', 'x');
-    const player2 = player('player2', 'o');
+    const player1 = player('player1', 'X');
+    const player2 = player('player2', 'O');
 
     let activePlayer = player1;
     const board = gameboard.getBoard();
@@ -80,10 +80,10 @@ const gamecontroller = (() => {
         const winningLines = [];
         let winner = false;
         const checkLine = (line, buttons) => {
-            if (line === "xxx") {
+            if (line === "XXX") {
                 winner = player1;
             }
-            else if (line === "ooo") {
+            else if (line === "OOO") {
                 winner = player2;
             }
         }
@@ -164,6 +164,7 @@ const displaycontroller = (() => {
     const modal = document.querySelector('.modal');
     const restartButton = document.getElementById('restart');
     const nextRoundButton = document.getElementById('next-round');
+    const turnDisplay = document.querySelector('.turn-display');
     const pointsX = document.querySelector('.player-x-points');
     const pointsO = document.querySelector('.player-o-points');
     const message = document.querySelector('.message');
@@ -176,11 +177,12 @@ const displaycontroller = (() => {
         e.target.classList.add(gamecontroller.getActivePlayer().token);
         e.target.disabled = true;
         gamecontroller.playRound(row, column);
+        adjustTurnDisplay();
     }
 
     const resetDisplay = () => {
         buttons.forEach(button => {
-            let buttonClass = button.classList.contains('x') ? 'x' : 'o';
+            let buttonClass = button.classList.contains('X') ? 'X' : 'O';
             button.classList.remove(buttonClass);
             button.disabled = false;
         })
@@ -196,8 +198,12 @@ const displaycontroller = (() => {
     }
 
     const adjustMessage = (winner) => {
-        let token = winner.token.toUpperCase();
+        let token = winner.token;
         message.textContent = `${token} WON THE ROUND`;
+    }
+
+    const adjustTurnDisplay = () => {
+        turnDisplay.textContent = `${gamecontroller.getActivePlayer().token} TURN`;
     }
 
     buttons.forEach(button => button.addEventListener('click', _buttonClicked));
@@ -206,6 +212,7 @@ const displaycontroller = (() => {
         pointsO.textContent = '0';
         gamecontroller.resetAll();
     });
+
     nextRoundButton.addEventListener('click', () => {
         resetDisplay();
         toggleModal();

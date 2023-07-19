@@ -176,7 +176,7 @@ header {
 
 /* js interaction */
 
-.game-btn:hover, .x, .o {
+.game-btn:hover, .X, .O {
     background-repeat: no-repeat;
     background-position: center;
     transition: none;
@@ -186,10 +186,10 @@ header {
     opacity: 0.5;
 }
 
-.x {
+.X {
     background-image: url(images/x.svg);
 }
 
-.o {
+.O {
     background-image: url(images/o.svg);
 }
