@@ -74,12 +74,14 @@ const gamecontroller = (() => {
     const _findWinner = () => {
         const winningLines = [];
         let winner = false;
-        const checkLine = (line) => {
+        const checkLine = (line, buttons) => {
             if (line === "xxx") {
                 winner = player1;
+                player1.addPoint();
             }
             else if (line === "ooo") {
                 winner = player2;
+                player2.addPoint();
             }
         }
 
@@ -113,40 +115,54 @@ const gamecontroller = (() => {
         winningLines.forEach(line => {
             // each line contains a winning line
             let checked = "";
+            let buttons = [];
             line.forEach((element) => {
                 // each element contains coordinates [x, y]
                 checked += board[element[0]][element[1]].getValue();
+                buttons.push(element);
             });
-            checkLine(checked);
+            checkLine(checked,buttons);
             checked = "";
         });
 
         return winner;
     }
 
-    const reset = () => {
+    const resetAll = () => {
         displaycontroller.resetDisplay();
         gameboard.resetBoard()
+        displaycontroller.toggleModal();
     }
 
     const playRound = (row, column) => {
         gameboard.updateBoard(row, column, activePlayer);
         _toggleActivePlayer();
         if (_findWinner()) {
-            reset();
+            displaycontroller.addPoints();
+            resetAll();
+            _toggleActivePlayer();
         }
     }
 
     return {
+        player1,
+        player2,
         getActivePlayer,
         playRound,
-        reset,
+        resetAll,
     }
 })();
 
 const displaycontroller = (() => {
     const buttons = document.querySelectorAll('.game-btn');
-    
+    const modal = document.querySelector('.modal');
+    const restartButton = document.getElementById('restart');
+    const nextRoundButton = document.getElementById('next-round');
+    const pointsX = document.querySelector('.player-x-points');
+    const pointsO = document.querySelector('.player-o-points');
+    const player1 = gamecontroller.player1;
+    const player2 = gamecontroller.player2;
+
     const _buttonClicked = (e) => {
         let row = e.target.dataset.row;
         let column = e.target.dataset.column;
@@ -163,9 +179,25 @@ const displaycontroller = (() => {
         })
     }
 
-    buttons.forEach(button => button.addEventListener('click', _buttonClicked));
+    const toggleModal = () => {
+        modal.style.display = getComputedStyle(modal).display == 'none' ? 'grid' : 'none';
+    }
 
+    const addPoints = () => {
+        pointsX.textContent = player1.getPoints();
+        pointsO.textContent = player2.getPoints();
+    }
+
+    buttons.forEach(button => button.addEventListener('click', _buttonClicked));
+    restartButton.addEventListener('click', gamecontroller.resetAll);
+    nextRoundButton.addEventListener('click', () => {
+        resetDisplay();
+        toggleModal();
+      });
+      
     return {
         resetDisplay,
+        toggleModal,
+        addPoints,
     }
 })();
