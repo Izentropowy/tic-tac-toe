@@ -8,11 +8,16 @@ const player = (name, token) => {
 
     const getPoints = () => points;
 
+    const resetPoints = () => {
+        points = 0;
+    }
+
     return {
         name,
         token,
         addPoint,
         getPoints,
+        resetPoints,
     }
 }
 
@@ -77,11 +82,9 @@ const gamecontroller = (() => {
         const checkLine = (line, buttons) => {
             if (line === "xxx") {
                 winner = player1;
-                player1.addPoint();
             }
             else if (line === "ooo") {
                 winner = player2;
-                player2.addPoint();
             }
         }
 
@@ -138,6 +141,9 @@ const gamecontroller = (() => {
         gameboard.updateBoard(row, column, activePlayer);
         _toggleActivePlayer();
         if (_findWinner()) {
+            let winner = _findWinner()
+            winner.addPoint();
+            displaycontroller.adjustMessage(winner);
             displaycontroller.addPoints();
             resetAll();
             _toggleActivePlayer();
@@ -160,6 +166,7 @@ const displaycontroller = (() => {
     const nextRoundButton = document.getElementById('next-round');
     const pointsX = document.querySelector('.player-x-points');
     const pointsO = document.querySelector('.player-o-points');
+    const message = document.querySelector('.message');
     const player1 = gamecontroller.player1;
     const player2 = gamecontroller.player2;
 
@@ -188,16 +195,26 @@ const displaycontroller = (() => {
         pointsO.textContent = player2.getPoints();
     }
 
+    const adjustMessage = (winner) => {
+        let token = winner.token.toUpperCase();
+        message.textContent = `${token} WON THE ROUND`;
+    }
+
     buttons.forEach(button => button.addEventListener('click', _buttonClicked));
-    restartButton.addEventListener('click', gamecontroller.resetAll);
+    restartButton.addEventListener('click', () => {
+        pointsX.textContent = '0';
+        pointsO.textContent = '0';
+        gamecontroller.resetAll();
+    });
     nextRoundButton.addEventListener('click', () => {
         resetDisplay();
         toggleModal();
-      });
+    });
       
     return {
         resetDisplay,
         toggleModal,
         addPoints,
+        adjustMessage,
     }
 })();
