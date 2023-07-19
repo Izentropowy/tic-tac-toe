@@ -1,33 +1,4 @@
 
-/* 
-MODULES:
-Gameboard():
-    - creates empty board
-    - updates board
-    - checks available fields
-
-Gamecontroller():
-    - creates players
-    - toggle active player
-    - plays a round
-    - looks for a winner
-
-Displaycontroller():
-    - displays values in corresponding fields
-    - updates turn display
-    - updates points display
-
-FACTORIES:
-Player():
-    - name
-    - token
-    - points
-
-Field():
-    - value
-    - change value
- */
-
 const player = (name, token) => {
     let points = 0;
 
@@ -153,18 +124,23 @@ const gamecontroller = (() => {
         return winner;
     }
 
+    const reset = () => {
+        displaycontroller.resetDisplay();
+        gameboard.resetBoard()
+    }
+
     const playRound = (row, column) => {
         gameboard.updateBoard(row, column, activePlayer);
         _toggleActivePlayer();
         if (_findWinner()) {
-            gameboard.resetBoard();
-            displaycontroller.resetDisplay();
+            reset();
         }
     }
 
     return {
         getActivePlayer,
         playRound,
+        reset,
     }
 })();
 
