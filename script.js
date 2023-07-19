@@ -165,6 +165,7 @@ const displaycontroller = (() => {
     const restartButton = document.getElementById('restart');
     const nextRoundButton = document.getElementById('next-round');
     const turnDisplay = document.querySelector('.turn-display');
+    const undo = document.querySelector('.undo');
     const pointsX = document.querySelector('.player-x-points');
     const pointsO = document.querySelector('.player-o-points');
     const message = document.querySelector('.message');
@@ -216,6 +217,11 @@ const displaycontroller = (() => {
     nextRoundButton.addEventListener('click', () => {
         resetDisplay();
         toggleModal();
+    });
+
+    undo.addEventListener('click', () => {
+        displaycontroller.resetDisplay();
+        gameboard.resetBoard()
     });
       
     return {
