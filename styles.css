@@ -193,3 +193,9 @@ header {
 .O {
     background-image: url(images/o.svg);
 }
+
+.winner {
+    background-color: gold;
+    transform: scale(1.1);
+    transition: background-color transform 0.5s ease;
+}

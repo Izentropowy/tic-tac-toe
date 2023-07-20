@@ -66,11 +66,13 @@ const gameboard = (() => {
 const gamecontroller = (() => {
     const player1 = player('player1', 'X');
     const player2 = player('player2', 'O');
+    const tiePlayer = player('player2', 't');
 
     let activePlayer = player1;
+    let roundCounter = 0;
     const board = gameboard.getBoard();
 
-    const _toggleActivePlayer = () => {
+    const toggleActivePlayer = () => {
         activePlayer === player1 ? activePlayer = player2 : activePlayer = player1;
     }
 
@@ -79,12 +81,17 @@ const gamecontroller = (() => {
     const _findWinner = () => {
         const winningLines = [];
         let winner = false;
-        const checkLine = (line, buttons) => {
+        const checkLine = (line, coordinates) => {
             if (line === "XXX") {
                 winner = player1;
+                displaycontroller.colorWinningLine(coordinates);
             }
             else if (line === "OOO") {
                 winner = player2;
+                displaycontroller.colorWinningLine(coordinates);
+            }
+            else if (roundCounter === 9 && (!winner)) {
+                winner = tiePlayer;
             }
         }
 
@@ -118,44 +125,55 @@ const gamecontroller = (() => {
         winningLines.forEach(line => {
             // each line contains a winning line
             let checked = "";
-            let buttons = [];
-            line.forEach((element) => {
-                // each element contains coordinates [x, y]
-                checked += board[element[0]][element[1]].getValue();
-                buttons.push(element);
+            let coordinates = [];
+            line.forEach((coordinate) => {
+                // each element contains coordinates [x, y] - row and column of a button
+                checked += board[coordinate[0]][coordinate[1]].getValue();
+                coordinates.push(coordinate);
             });
-            checkLine(checked,buttons);
+            checkLine(checked, coordinates);
             checked = "";
+            coordinates = [];
         });
 
         return winner;
     }
 
     const resetAll = () => {
-        displaycontroller.resetDisplay();
-        gameboard.resetBoard()
-        displaycontroller.toggleModal();
+            displaycontroller.resetDisplay();
+            gameboard.resetBoard();
+            roundCounter = 0;
     }
 
     const playRound = (row, column) => {
+        roundCounter += 1;
+        console.log(roundCounter);
         gameboard.updateBoard(row, column, activePlayer);
-        _toggleActivePlayer();
-        if (_findWinner()) {
-            let winner = _findWinner()
+        toggleActivePlayer();
+        let winner = _findWinner()
+        if (winner) {
             winner.addPoint();
             displaycontroller.adjustMessage(winner);
             displaycontroller.addPoints();
-            resetAll();
-            _toggleActivePlayer();
+            setTimeout(() => {
+                resetAll();
+                displaycontroller.toggleModal();
+              }, 500);
+
+            if (winner.token === 'X' || winner.token === 't') {
+                toggleActivePlayer();
+            }
         }
     }
 
     return {
         player1,
         player2,
+        tiePlayer,
         getActivePlayer,
         playRound,
         resetAll,
+        toggleActivePlayer,
     }
 })();
 
@@ -168,9 +186,11 @@ const displaycontroller = (() => {
     const undo = document.querySelector('.undo');
     const pointsX = document.querySelector('.player-x-points');
     const pointsO = document.querySelector('.player-o-points');
+    const ties = document.querySelector('.ties');
     const message = document.querySelector('.message');
     const player1 = gamecontroller.player1;
     const player2 = gamecontroller.player2;
+    const tiePlayer = gamecontroller.tiePlayer;
 
     const _buttonClicked = (e) => {
         let row = e.target.dataset.row;
@@ -196,32 +216,56 @@ const displaycontroller = (() => {
     const addPoints = () => {
         pointsX.textContent = player1.getPoints();
         pointsO.textContent = player2.getPoints();
+        ties.textContent = tiePlayer.getPoints();
     }
 
     const adjustMessage = (winner) => {
         let token = winner.token;
-        message.textContent = `${token} WON THE ROUND`;
+        if (winner.token === 't') {
+            message.textContent = `IT'S A TIE`;
+        }
+        else {
+            message.textContent = `${token} WON THE ROUND`;
+        };
     }
 
     const adjustTurnDisplay = () => {
         turnDisplay.textContent = `${gamecontroller.getActivePlayer().token} TURN`;
     }
 
+    const colorWinningLine = (coordinates) => {
+        coordinates.forEach(coordinate => {
+            let row = coordinate[0];
+            let column = coordinate[1];
+            const button = document.querySelector(`[data-row="${row}"][data-column="${column}"]`);
+            button.classList.add('winner');
+            setTimeout(() => {
+                button.classList.remove('winner');
+              }, 500);
+        });
+        
+
+    }
+
     buttons.forEach(button => button.addEventListener('click', _buttonClicked));
     restartButton.addEventListener('click', () => {
         pointsX.textContent = '0';
         pointsO.textContent = '0';
+        ties.textContent = '0';
         gamecontroller.resetAll();
+        toggleModal();
     });
 
     nextRoundButton.addEventListener('click', () => {
-        resetDisplay();
         toggleModal();
     });
 
     undo.addEventListener('click', () => {
-        displaycontroller.resetDisplay();
-        gameboard.resetBoard()
+        gamecontroller.resetAll();
+        if (gamecontroller.getActivePlayer().token === 'O') {
+            gamecontroller.toggleActivePlayer();
+        }
+        adjustTurnDisplay();
     });
       
     return {
@@ -229,5 +273,6 @@ const displaycontroller = (() => {
         toggleModal,
         addPoints,
         adjustMessage,
+        colorWinningLine,
     }
 })();
