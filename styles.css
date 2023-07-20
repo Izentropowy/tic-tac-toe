@@ -17,7 +17,7 @@
     box-sizing: border-box;
     font-family: 'Roboto', sans-serif;
     color: var(--grey);
-    letter-spacing: 3px;
+    letter-spacing: 1px;
 }
 
 html, body {
