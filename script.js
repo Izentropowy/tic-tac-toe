@@ -155,6 +155,7 @@ const gamecontroller = (() => {
             winner.addPoint();
             displaycontroller.adjustMessage(winner);
             displaycontroller.addPoints();
+            displaycontroller.disableButtons();
             setTimeout(() => {
                 resetAll();
                 displaycontroller.toggleModal();
@@ -247,6 +248,12 @@ const displaycontroller = (() => {
 
     }
 
+    const disableButtons = () => {
+        buttons.forEach(button => {
+            button.disabled = true;
+        })
+    }
+
     buttons.forEach(button => button.addEventListener('click', _buttonClicked));
     restartButton.addEventListener('click', () => {
         pointsX.textContent = '0';
@@ -274,5 +281,6 @@ const displaycontroller = (() => {
         addPoints,
         adjustMessage,
         colorWinningLine,
+        disableButtons,
     }
 })();
