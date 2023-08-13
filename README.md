@@ -1,3 +1,5 @@
+## **Tic-Tac-Toe**
+
 <div align=center>
 <img src='/images/previev.png' alt='project-cover'>
 </div>
